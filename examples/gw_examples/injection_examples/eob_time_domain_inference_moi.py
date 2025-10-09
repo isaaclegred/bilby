@@ -105,7 +105,7 @@ label = "eob_time_domain_source_model"
 waveform = bilby.gw.waveform_generator.WaveformGenerator(
     duration=duration,
     sampling_frequency=sampling_frequency,
-    time_domain_source_model=eob.eob_waveform_model,
+    time_domain_source_model=eob.eob_waveform_model_moi,
     parameter_conversion = lambda x : (x , []),
     start_time=injection_parameters["geocent_time"] + 2.0 - duration,
 )
@@ -115,7 +115,7 @@ ifos = bilby.gw.detector.InterferometerList(["H1", "L1", "V1"])
 ifos.set_strain_data_from_power_spectral_densities(
     sampling_frequency=sampling_frequency,
     duration=duration,
-    start_time=injection_parameters["geocent_time"] - 0.5,
+    start_time=injection_parameters["geocent_time"] + 2.0 - duration,
 )
 ifos.inject_signal(
     waveform_generator=waveform, parameters=injection_parameters, raise_error=False
@@ -138,6 +138,7 @@ prior["phi_init"] = 0.0
 prior["luminosity_distance"] = 10
 prior["iota"] = np.pi/2
 prior["phase"] = 0
+
 prior = bilby.core.prior.PriorDict(prior, conversion_function=lambda params: conversion_func({**params, "mass_1": injection_parameters["mass_1"], "mass_2": injection_parameters["mass_2"]}))
 # define likelihood
 likelihood = bilby.gw.likelihood.GravitationalWaveTransient(ifos, waveform)

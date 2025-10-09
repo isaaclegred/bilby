@@ -234,7 +234,8 @@ class WaveformGenerator(object):
         new_parameters, _ = self.parameter_conversion(new_parameters)
         for key in self.source_parameter_keys.symmetric_difference(
                 new_parameters):
-            new_parameters.pop(key)
+            if key in new_parameters:
+                new_parameters.pop(key)
         self.__parameters = new_parameters
         self.__parameters.update(self.waveform_arguments)
 
