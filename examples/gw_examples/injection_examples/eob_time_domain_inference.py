@@ -113,6 +113,7 @@ ifos.inject_signal(
 
 #  create the priors
 prior = injection_parameters.copy()
+prior = injection_parameters.copy()
 prior["mass_1"] = 1.4
 prior["mass_2"] = 1.4
 prior["chi_1"] = -.4

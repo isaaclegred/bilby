@@ -149,7 +149,7 @@ result = bilby.core.sampler.run_sampler(
     prior,
     sampler="dynesty",
     npoints=500,
-    walks=5,
+    walks=20,
     nact=2,
     injection_parameters=injection_parameters,
     outdir=outdir,
