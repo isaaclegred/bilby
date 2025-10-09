@@ -86,8 +86,8 @@ injection_parameters = dict(
     iota=np.pi/2,
     lambda_tilde=450,
     delta_lambda_tilde=0,
-    I1 = eob.I_of_lambda(450),
-    I2 = eob.I_of_lambda(450),
+    delta_I1 = 0,
+    delta_I2 = 0,
     phase=0,
     ra=0,
     dec=0,
@@ -98,7 +98,7 @@ injection_parameters = dict(
 
 duration = 4
 sampling_frequency = 4096
-outdir = "outdir_moi"
+outdir = "outdir_moi_new"
 label = "eob_time_domain_source_model"
 
 # call the waveform_generator to create our waveform model.
@@ -127,11 +127,11 @@ prior["mass_2"] = 1.4
 prior["chi_1"] = -.4
 prior["chi_2"] = -.2
 prior["lambda_tilde"] = bilby.core.prior.Uniform( 200, 650, "lambda_tilde")
-prior["delta_lambda_tilde"] = bilby.core.prior.Uniform(-300, 300, "delta_lambda_tilde")
+prior["delta_lambda_tilde"] = bilby.core.prior.Uniform(-150, 150, "delta_lambda_tilde")
 prior["lambda_1"] = bilby.core.prior.Constraint(name="lambda_1", minimum=100, maximum=1000)
 prior["lambda_2"] = bilby.core.prior.Constraint(name="lambda_2", minimum=100, maximum=1000)
-prior["I1"] = bilby.core.prior.Uniform(8, 40, "I1")
-prior["I2"] = bilby.core.prior.Uniform(8, 40, "I2")
+prior["delta_I1"] = bilby.core.prior.Uniform(-10, 10, "delta_I1")
+prior["delta_I2"] = bilby.core.prior.Uniform(-10, 10, "delta_I2")
 prior["t0"] = bilby.core.prior.DeltaFunction(0.0, "t0")
 prior["r_M_init"] = 24
 prior["phi_init"] = 0.0
