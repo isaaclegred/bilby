@@ -69,8 +69,11 @@ def time_domain_damped_sinusoid(time, amplitude, damping_time, frequency, phase,
 def conversion_func(params):
     converted_params = params.copy()
     lambda_1, lambda_2 = bilby.gw.conversion.lambda_tilde_delta_lambda_tilde_to_lambda_1_lambda_2(params["lambda_tilde"], params["delta_lambda_tilde"], params["mass_1"], params["mass_2"])
+    I1, I2 = eob.I_of_lambda(lambda_1) + params["delta_I1"], eob.I_of_lambda(lambda_2) + params["delta_I2"]
     converted_params["lambda_1"] = lambda_1
     converted_params["lambda_2"] = lambda_2
+    converted_params["I1"] = I1
+    converted_params["I2"] = I2
     return converted_params
 
 
@@ -132,6 +135,9 @@ prior["lambda_1"] = bilby.core.prior.Constraint(name="lambda_1", minimum=100, ma
 prior["lambda_2"] = bilby.core.prior.Constraint(name="lambda_2", minimum=100, maximum=1000)
 prior["delta_I1"] = bilby.core.prior.Uniform(-10, 10, "delta_I1")
 prior["delta_I2"] = bilby.core.prior.Uniform(-10, 10, "delta_I2")
+# Bound the I values to increase convergence 
+prior["I1"] = bilby.core.prior.Constraint(name="I1", minimum=4, maximum=100)
+prior["I2"] = bilby.core.prior.Constraint(name="I2", minimum=4, maximum=100)
 prior["t0"] = bilby.core.prior.DeltaFunction(0.0, "t0")
 prior["r_M_init"] = 24
 prior["phi_init"] = 0.0
@@ -143,17 +149,35 @@ prior = bilby.core.prior.PriorDict(prior, conversion_function=lambda params: con
 # define likelihood
 likelihood = bilby.gw.likelihood.GravitationalWaveTransient(ifos, waveform)
 # launch sampler
-result = bilby.core.sampler.run_sampler(
+# Call suggested by chatgpt to improve convergence
+result = bilby.run_sampler(
     likelihood,
     prior,
     sampler="dynesty",
     npoints=500,
-    walks=25,
+    walks=10,
     nact=2,
+    dlogz=0.1,
+    sample="rslice",
+    use_dynesty_dynamic=True,
+    npool=8,  # or however many cores you have
     injection_parameters=injection_parameters,
     outdir=outdir,
     label=label,
     result_class=bilby.gw.result.CBCResult,
 )
+# Basic Sampler call
+# result = bilby.core.sampler.run_sampler(
+#     likelihood,
+#     prior,
+#     sampler="dynesty",
+#     npoints=500,
+#     walks=25,
+#     nact=2,
+#     injection_parameters=injection_parameters,
+#     outdir=outdir,
+#     label=label,
+#     result_class=bilby.gw.result.CBCResult,
+# )
 
 result.plot_corner()
